@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "173658037185",
+    "firebase_url": "https://iswint-34bed.firebaseio.com",
+    "project_id": "iswint-34bed",
+    "storage_bucket": "iswint-34bed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173658037185:android:0f0676c56263413f",
+        "android_client_info": {
+          "package_name": "com.example.livia.iswint"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "173658037185-kl2h58kkp1ca9kun4s7ff0ns11pt08p6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.livia.iswint",
+            "certificate_hash": "7f624eb1398d6db47d23616b478bfa8020b3e9c1"
+          }
+        },
+        {
+          "client_id": "173658037185-qdftia05jspic5hfdsi6cibh1uaijgev.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCENC2CjUOKR2i95QIseG-kS3Q-zI2ZyuE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "173658037185-qdftia05jspic5hfdsi6cibh1uaijgev.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
