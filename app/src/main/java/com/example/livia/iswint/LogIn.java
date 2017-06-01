@@ -29,7 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class LogIn extends Activity {
+public class LogIn extends AppCompatActivity {
 
     private EditText mEmailFiled;
     private  EditText mPasswordField;
@@ -58,7 +58,7 @@ public class LogIn extends Activity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
                 if(firebaseAuth.getCurrentUser() != null){
-                    startActivity(new Intent(LogIn.this, account_activity.class));
+                    //startActivity(new Intent(LogIn.this, account_activity.class));
                 }
             }
         };
