@@ -45,7 +45,7 @@ public class PostActivity extends AppCompatActivity {
         setContentView(R.layout.activity_post);
 
         mStorage = FirebaseStorage.getInstance().getReference();
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("ISWinT Blog");
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Blog");
         mPostDesc = (EditText) findViewById(R.id.descField);
         mSubmitBtn = (Button) findViewById(R.id.submit_btn);
         mSelctImage = (ImageButton) findViewById(R.id.imageSelect);
@@ -74,11 +74,13 @@ public class PostActivity extends AppCompatActivity {
         private void startPosting() {
 
             mProgress.setMessage("Posting to ISWinT Blog");
-            mProgress.show();
+
 
             final String desc_value = mPostDesc.getText().toString().trim();
 
-            if(mImageUri != null) {
+            if(!TextUtils.isEmpty(desc_value) && mImageUri != null) {
+
+                mProgress.show();
 
                 StorageReference filepath = mStorage.child("Blog_Images").child(mImageUri.getLastPathSegment());
 
@@ -91,8 +93,8 @@ public class PostActivity extends AppCompatActivity {
                         DatabaseReference newPost = mDatabase.push();
 
                         newPost.child("desc").setValue(desc_value);
-                        newPost.child("iamge").setValue(downloadUri.toString());
-                        newPost.child("uid").setValue(FirebaseAuth.getInstance().getCurrentUser());
+                        newPost.child("image").setValue(downloadUri.toString());
+                        newPost.child("uid").setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
                         mProgress.dismiss();
 
