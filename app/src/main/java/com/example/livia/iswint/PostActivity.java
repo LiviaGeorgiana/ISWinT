@@ -19,8 +19,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.w3c.dom.Text;
-
 public class PostActivity extends AppCompatActivity {
 
     private ImageButton mSelctImage;
@@ -98,7 +96,7 @@ public class PostActivity extends AppCompatActivity {
 
                         mProgress.dismiss();
 
-                        startActivity(new Intent(PostActivity.this, account_activity.class));
+                        startActivity(new Intent(PostActivity.this, BlogActivity.class));
 
                     }
                 });

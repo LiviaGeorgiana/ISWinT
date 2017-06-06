@@ -29,18 +29,6 @@
             android:hint="Password..."
             android:inputType="textPassword" />
 
-        <EditText
-            android:id="@+id/email_field"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/logoImage"
-            android:layout_marginTop="35dp"
-            android:ems="10"
-            android:hint="Email..."
-            android:inputType="textEmailAddress" />
-
         <Button
             android:id="@+id/login_btn"
             android:layout_width="match_parent"
@@ -50,6 +38,7 @@
             android:layout_below="@+id/password_field"
             android:layout_marginTop="29dp"
             android:background="@drawable/btn_background"
+            android:textColor="#fee100"
             android:text="SING IN" />
 
         <TextView
@@ -70,5 +59,37 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:visibility="visible"/>
+
+        <Button
+            android:text="Register"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/regBtn"
+            android:layout_below="@+id/login_btn"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/btn_background"
+            android:textColor="@color/colorYellow"
+            android:layout_marginTop="50dp" />
+
+        <EditText
+            android:id="@+id/email_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Email..."
+            android:layout_below="@+id/logoImage"
+            android:inputType="textEmailAddress"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="or"
+            android:layout_below="@+id/login_btn"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+
+            />
     </RelativeLayout>
 </ScrollView>

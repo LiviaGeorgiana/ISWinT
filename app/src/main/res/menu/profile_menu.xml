@@ -2,10 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/action_add"
-        android:icon="@mipmap/ic_add_white_24dp"
-        android:title="Add Post"
-        app:showAsAction="always" />
 
     <item android:id="@+id/action_settings"
         android:title="Settings"
@@ -15,7 +11,8 @@
         android:title="Log Out"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/action_gotoprofile"
-        android:title="Go to Profile"
+    <item android:id="@+id/action_gotoblog"
+        android:title="Go to ISWinT Blog"
         app:showAsAction="never"/>
+
 </menu>

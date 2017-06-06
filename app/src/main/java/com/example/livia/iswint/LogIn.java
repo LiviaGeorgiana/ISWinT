@@ -36,6 +36,8 @@ public class LogIn extends AppCompatActivity {
 
     private Button mLoginBtn;
 
+    private Button mRegBtn;
+
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -52,16 +54,25 @@ public class LogIn extends AppCompatActivity {
         mPasswordField = (EditText) findViewById(R.id.password_field);
 
         mLoginBtn = (Button) findViewById(R.id.login_btn);
+        mRegBtn = (Button) findViewById(R.id.regBtn);
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
                 if(firebaseAuth.getCurrentUser() != null){
-                    startActivity(new Intent(LogIn.this, account_activity.class));
+                    startActivity(new Intent(LogIn.this, BlogActivity.class));
                 }
             }
         };
+
+        mRegBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                startActivity(new Intent(LogIn.this, RoleActivity.class));
+            }
+        });
 
 
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
