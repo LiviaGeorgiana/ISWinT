@@ -28,5 +28,14 @@ public class RoleActivity extends AppCompatActivity {
         });
 
 
+
+        mOrganizerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                startActivity(new Intent(RoleActivity.this, RegisterOrganizerActivity.class));
+            }
+        });
+
     }
 }

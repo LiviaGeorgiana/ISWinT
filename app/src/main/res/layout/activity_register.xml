@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
         android:ems="10"
-        android:layout_below="@+id/nameField"
+        android:layout_below="@id/nameField"
         android:layout_alignParentStart="true"
         android:layout_marginTop="15dp"
         android:id="@+id/emailField"
@@ -47,7 +47,7 @@
         android:ems="10"
         android:layout_marginTop="15dp"
         android:id="@+id/countryField"
-        android:layout_below="@+id/emailField"
+        android:layout_below="@+id/genderSpinner"
         android:layout_alignParentStart="true"
         android:hint="Country" />
 
@@ -60,18 +60,7 @@
         android:ems="10"
         android:id="@+id/phoneField"
         android:hint="Phone"
-        android:layout_below="@id/countryField"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="15dp" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/workshopField"
-        android:hint="Workshop"
-        android:layout_below="@+id/ageField"
+        android:layout_below="@id/emailField"
         android:layout_alignParentStart="true"
         android:layout_marginTop="15dp" />
 
@@ -82,20 +71,32 @@
         android:ems="10"
         android:id="@+id/roomField"
         android:hint="Room"
-        android:layout_below="@+id/workshopField"
+        android:layout_below="@+id/workshopSpinner"
         android:layout_alignParentStart="true"
         android:layout_marginTop="15dp" />
 
-    <EditText
+    <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:id="@+id/ageField"
-        android:hint="Age"
+        android:id="@+id/workshopSpinner"
+        android:layout_below="@+id/birthDateField"
+        android:layout_alignParentStart="true"
         android:layout_marginTop="15dp"
-        android:layout_below="@+id/phoneField"
-        android:layout_alignParentStart="true" />
+        android:padding="20dp"
+        >
+    </Spinner>
+
+       <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/birthDateField"
+        android:inputType="date"
+        android:focusableInTouchMode="false"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/countryField"
+        android:hint="Date of Birth"
+        />
+
     <Button
         android:text="Register"
         android:layout_width="wrap_content"
@@ -105,7 +106,9 @@
         android:textColor="#fee100"
         android:layout_marginTop="15dp"
         android:layout_below="@+id/passField"
-        android:layout_marginEnd="121dp" />
+        android:layout_marginEnd="121dp"
+        android:layout_centerHorizontal="true"/>
+
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -113,9 +116,20 @@
         android:id="@+id/passField"
         android:hint="Password"
         android:layout_marginTop="15dp"
-        android:layout_below="@+id/roomField"
+        android:layout_below="@id/roomField"/>
 
-        />
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/genderSpinner"
+        android:layout_below="@id/phoneField"
+        android:ems="10"
+        android:spinnerMode="dropdown"
+        android:layout_marginTop="15dp"
+        android:padding="20dp"
+        >
+    </Spinner>
+
 </RelativeLayout>
 
 </ScrollView>

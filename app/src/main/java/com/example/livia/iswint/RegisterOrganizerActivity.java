@@ -1,41 +1,83 @@
 package com.example.livia.iswint;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import static android.R.attr.country;
+
 public class RegisterOrganizerActivity extends AppCompatActivity {
+
+    private EditText mOrgNameField;
+    private EditText mOrgEmailField;
+    private EditText mOrgPhoneField;
+    private EditText mOrgRoomField;
+    private EditText mOrgPasswordField;
+
+    private Button mOrgRegisterBtn;
+
+    private FirebaseAuth mAuth;
+
+    private DatabaseReference mDatabase;
+
+    private ProgressDialog mProgress;
 
     private String[] personalType = {"Female" , "Male"};
     private ArrayAdapter<String> adapterGenderType;
-    private Spinner mGenderSpinner;
+    private Spinner mOrgGenderSpinner;
 
     private String[] DepartmentType = {"Design", "DLH", "Enter&Wsh" ,"FR", "PR&IA"};
     private ArrayAdapter<String> adapterDepartmentType;
-    private Spinner mDepartmentSpinner;
+    private Spinner mOrgDepartmentSpinner;
 
     private Calendar myCalendar;
     private DatePickerDialog.OnDateSetListener date;
-    private EditText mBirthDate;
+    private EditText mOrgBirthDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_organizer);
 
-        mBirthDate = (EditText) findViewById(R.id.datePicker);
+        mOrgNameField = (EditText) findViewById(R.id.organizer_nameField);
+        mOrgEmailField = (EditText) findViewById(R.id.organizer_emailField);
+        mOrgPhoneField = (EditText) findViewById(R.id.organizer_phoneField);
+        mOrgRoomField = (EditText) findViewById(R.id.organizer_roomField);
+        mOrgPasswordField = (EditText) findViewById(R.id.organizer_passwordField);
+
+        mOrgRegisterBtn = (Button) findViewById(R.id.organizer_registerBtn);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Organizers");
+
+        mProgress = new ProgressDialog(this);
+
+        mOrgBirthDate = (EditText) findViewById(R.id.organizer_datePicker);
 
         //Gender Spinner
-        mGenderSpinner = (Spinner) findViewById(R.id.organizer_genderSpinner);
+        mOrgGenderSpinner = (Spinner) findViewById(R.id.organizer_genderSpinner);
 
         adapterGenderType = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, personalType);
@@ -43,26 +85,33 @@ public class RegisterOrganizerActivity extends AppCompatActivity {
                 android.R.layout.simple_spinner_item, personalType);
 
         adapterGenderType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mGenderSpinner.setAdapter(adapterGenderType);
+        mOrgGenderSpinner.setAdapter(adapterGenderType);
 
 
         //Department Spinner
-        mDepartmentSpinner = (Spinner) findViewById(R.id.organizer_departamentSpinner);
+        mOrgDepartmentSpinner = (Spinner) findViewById(R.id.organizer_departmentSpinner);
 
         adapterDepartmentType = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, personalType);
+                android.R.layout.simple_spinner_item, DepartmentType);
         adapterDepartmentType = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, personalType);
+                android.R.layout.simple_spinner_item, DepartmentType);
+        adapterDepartmentType = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, DepartmentType);
+        adapterDepartmentType = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, DepartmentType);
+        adapterDepartmentType = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, DepartmentType);
 
         adapterDepartmentType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mDepartmentSpinner.setAdapter(adapterDepartmentType);
+        mOrgDepartmentSpinner.setAdapter(adapterDepartmentType);
 
+        //organizer.datePicker
         myCalendar = Calendar.getInstance();
 
         date = new DatePickerDialog.OnDateSetListener() {
 
             @Override
-            public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+            public void onDateSet(DatePicker organizer_datePicker, int i, int i1, int i2) {
                 myCalendar.set(Calendar.YEAR, i);
                 myCalendar.set(Calendar.MONTH, i1);
                 myCalendar.set(Calendar.DAY_OF_MONTH, i2);
@@ -72,7 +121,7 @@ public class RegisterOrganizerActivity extends AppCompatActivity {
 
         };
 
-        mBirthDate.setOnClickListener(new View.OnClickListener() {
+        mOrgBirthDate.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -82,6 +131,64 @@ public class RegisterOrganizerActivity extends AppCompatActivity {
                         myCalendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
+
+        mOrgRegisterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                startOrgRegister();
+            }
+        });
+    }
+
+    private void startOrgRegister(){
+
+        final String name = mOrgNameField.getText().toString().trim();
+        String email = mOrgEmailField.getText().toString().trim();
+        final String phone = mOrgPhoneField.getText().toString().trim();
+        final String birth = mOrgBirthDate.getText().toString().trim();
+        final String gender = mOrgGenderSpinner.getSelectedItem().toString().trim();
+        final String department = mOrgDepartmentSpinner.getSelectedItem().toString().trim();
+        final String room = mOrgRoomField.getText().toString().trim();
+        String password = mOrgPasswordField.getText().toString().trim();
+
+        if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(email) && !TextUtils.isEmpty(phone) && !TextUtils.isEmpty(birth)
+                && !TextUtils.isEmpty(gender) && !TextUtils.isEmpty(department) && !TextUtils.isEmpty(room)
+                && !TextUtils.isEmpty(password)){
+
+            mProgress.setMessage("Signin Up...");
+            mProgress.show();
+
+
+            mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+
+                    if(task.isSuccessful()) {
+
+                        String user_id = mAuth.getCurrentUser().getUid();
+
+                        DatabaseReference current_user_db = mDatabase.child(user_id);
+
+                        current_user_db.child("name").setValue(name);
+                        current_user_db.child("phone").setValue(phone);
+                        current_user_db.child("birthdate").setValue(birth);
+                        current_user_db.child("department").setValue(department);
+                        current_user_db.child("room").setValue(room);
+                        current_user_db.child("gender").setValue(gender);
+                        current_user_db.child("image").setValue("default");
+
+                        mProgress.dismiss();
+
+                        Intent mainIntent = new Intent(RegisterOrganizerActivity.this, BlogActivity.class);
+                        mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(mainIntent);
+                    }
+
+                }
+            });
+        }
+
     }
 
     private void updateLabel() {
@@ -89,7 +196,8 @@ public class RegisterOrganizerActivity extends AppCompatActivity {
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
-        mBirthDate.setText(sdf.format(myCalendar.getTime()));
+        mOrgBirthDate.setText(sdf.format(myCalendar.getTime()));
     }
+
 
 }

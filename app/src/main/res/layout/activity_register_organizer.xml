@@ -53,12 +53,14 @@
         />
 
     <EditText
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/datePicker"
+        android:id="@+id/organizer.datePicker"
         android:inputType="date"
         android:focusableInTouchMode="false"
-
+        android:layout_below="@id/organizer.phoneField"
+        android:layout_marginTop="15dp"
+        android:hint="Date of Birth"
         />
 
 
@@ -67,23 +69,59 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/organizer.genderSpinner"
-        android:layout_below="@id/organizer.phoneField"
+        android:layout_below="@id/organizer.datePicker"
         android:ems="10"
         android:spinnerMode="dropdown"
         android:layout_marginTop="15dp"
+        android:padding="20dp"
         >
     </Spinner>
 
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/organizer.departamentSpinner"
+        android:id="@+id/organizer.departmentSpinner"
         android:layout_below="@id/organizer.genderSpinner"
         android:ems="10"
         android:spinnerMode="dropdown"
         android:layout_marginTop="15dp"
+        android:padding="20dp"
         >
     </Spinner>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/organizer.roomField"
+        android:layout_below="@id/organizer.departmentSpinner"
+        android:hint="Room"
+        android:ems="10"
+        android:layout_marginTop="15dp"
+        />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/organizer.passwordField"
+        android:inputType="textPassword"
+        android:layout_below="@id/organizer.roomField"
+        android:hint="Password"
+        android:ems="10"
+        android:layout_marginTop="15dp"
+        />
+
+    <Button
+        android:text="Register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/organizer.registerBtn"
+        android:background="@drawable/btn_background"
+        android:textColor="#fee100"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/organizer.passwordField"
+        android:layout_marginEnd="121dp"
+        android:layout_centerHorizontal="true"/>
+
 
 </RelativeLayout>
 
