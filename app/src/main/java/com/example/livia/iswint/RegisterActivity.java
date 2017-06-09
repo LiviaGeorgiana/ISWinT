@@ -33,6 +33,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText mRoomField;
     private EditText mPhoneField;
     private EditText mPasswordField;
+    private String mType = "Participant";
 
     //gender spinner
     private String[] personalType = {"Female" , "Male"};
@@ -81,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("Participants");
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
 
         mProgress = new ProgressDialog(this);
 
@@ -165,7 +166,7 @@ public class RegisterActivity extends AppCompatActivity {
     private  void startRegister(){
 
         final String name = mNameField.getText().toString().trim();
-        String email = mEmailField.getText().toString().trim();
+        final String email = mEmailField.getText().toString().trim();
         final String country = mCountryField.getText().toString().trim();
         final String phone = mPhoneField.getText().toString().trim();
         final String birthdate = mBirthDateField.getText().toString().trim();
@@ -173,6 +174,7 @@ public class RegisterActivity extends AppCompatActivity {
         final String room = mRoomField.getText().toString().trim();
         String password = mPasswordField.getText().toString().trim();
         final String gender = mGenderSpinner.getSelectedItem().toString().trim();
+        final String type = mType.toString().trim();
 
         if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(email) && !TextUtils.isEmpty(country) && !TextUtils.isEmpty(phone)
                 && !TextUtils.isEmpty(birthdate) && !TextUtils.isEmpty(workshop) && !TextUtils.isEmpty(room)
@@ -198,6 +200,8 @@ public class RegisterActivity extends AppCompatActivity {
                         current_user_db.child("workshop").setValue(workshop);
                         current_user_db.child("room").setValue(room);
                         current_user_db.child("gender").setValue(gender);
+                        current_user_db.child("type").setValue(type);
+                        current_user_db.child("email").setValue(email);
                         current_user_db.child("image").setValue("default");
 
                         mProgress.dismiss();

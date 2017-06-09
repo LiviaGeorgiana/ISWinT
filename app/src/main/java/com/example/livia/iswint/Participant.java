@@ -11,7 +11,7 @@ public class Participant {
     private String phone;
     private String birthdate;
     private String country;
-    private String department;
+    private String workshop;
     private String room;
     private String gender;
     private String type;
@@ -64,12 +64,12 @@ public class Participant {
         this.country = country;
     }
 
-    public String getDepartment() {
-        return department;
+    public String getWorkshop() {
+        return workshop;
     }
 
-    public void setDepartment(String department) {
-        this.department = department;
+    public void setWorkshop(String workshop) {
+        this.workshop = workshop;
     }
 
     public String getRoom() {
@@ -88,14 +88,17 @@ public class Participant {
         this.gender = gender;
     }
 
+    public Participant( ) {
+    }
+
     public Participant(String type, String name, String email, String phone, String birthdate, String country,
-                       String department, String room, String gender) {
+                       String workshop, String room, String gender) {
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.birthdate = birthdate;
         this.country = country;
-        this.department = department;
+        this.workshop = workshop;
         this.room = room;
         this.gender = gender;
         this.type = type;

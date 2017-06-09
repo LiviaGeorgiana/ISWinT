@@ -9,15 +9,25 @@ public class Blog {
     private String desc;
     private String image;
     private String uid;
+    private String username;
 
     public Blog(){
 
     }
 
-    public Blog(String desc, String image, String uid) {
+    public Blog(String desc, String image, String uid, String username) {
         this.desc = desc;
         this.image = image;
         this.uid = uid;
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getUid() {

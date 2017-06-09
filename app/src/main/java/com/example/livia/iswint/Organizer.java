@@ -11,10 +11,18 @@ public class Organizer {
     private String email;
     private String phone;
     private String birthdate;
-    private String department;
+    private String workshop;
     private String room;
     private String gender;
+    private String country;
 
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
 
     public String getType() {
         return type;
@@ -56,12 +64,12 @@ public class Organizer {
         this.birthdate = birthdate;
     }
 
-    public String getDepartment() {
-        return department;
+    public String getWorkshop() {
+        return workshop;
     }
 
-    public void setDepartment(String department) {
-        this.department = department;
+    public void setWorkshop(String workshop) {
+        this.workshop = workshop;
     }
 
     public String getRoom() {
@@ -80,14 +88,15 @@ public class Organizer {
         this.gender = gender;
     }
 
-    public Organizer(String type, String name, String email, String phone, String birthdate, String department, String room, String gender) {
+    public Organizer(String type, String name, String email, String phone, String birthdate, String workshop, String room, String gender, String country) {
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.birthdate = birthdate;
-        this.department = department;
+        this.workshop = workshop;
         this.room = room;
         this.gender = gender;
         this.type = type;
+        this.country = country;
     }
 }

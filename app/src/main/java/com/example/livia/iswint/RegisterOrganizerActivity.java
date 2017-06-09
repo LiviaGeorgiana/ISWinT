@@ -34,7 +34,8 @@ public class RegisterOrganizerActivity extends AppCompatActivity {
     private EditText mOrgPhoneField;
     private EditText mOrgRoomField;
     private EditText mOrgPasswordField;
-
+    private String mOrgType = "Organizer";
+    private String mOrgCountry = "Romania";
     private Button mOrgRegisterBtn;
 
     private FirebaseAuth mAuth;
@@ -60,6 +61,8 @@ public class RegisterOrganizerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_organizer);
 
+
+
         mOrgNameField = (EditText) findViewById(R.id.organizer_nameField);
         mOrgEmailField = (EditText) findViewById(R.id.organizer_emailField);
         mOrgPhoneField = (EditText) findViewById(R.id.organizer_phoneField);
@@ -70,7 +73,7 @@ public class RegisterOrganizerActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("Organizers");
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
 
         mProgress = new ProgressDialog(this);
 
@@ -144,16 +147,18 @@ public class RegisterOrganizerActivity extends AppCompatActivity {
     private void startOrgRegister(){
 
         final String name = mOrgNameField.getText().toString().trim();
-        String email = mOrgEmailField.getText().toString().trim();
+        final String email = mOrgEmailField.getText().toString().trim();
         final String phone = mOrgPhoneField.getText().toString().trim();
         final String birth = mOrgBirthDate.getText().toString().trim();
         final String gender = mOrgGenderSpinner.getSelectedItem().toString().trim();
-        final String department = mOrgDepartmentSpinner.getSelectedItem().toString().trim();
+        final String workshop = mOrgDepartmentSpinner.getSelectedItem().toString().trim();
         final String room = mOrgRoomField.getText().toString().trim();
         String password = mOrgPasswordField.getText().toString().trim();
+        final String type = mOrgType.toString().trim();
+        final String country = mOrgCountry.toString().trim();
 
         if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(email) && !TextUtils.isEmpty(phone) && !TextUtils.isEmpty(birth)
-                && !TextUtils.isEmpty(gender) && !TextUtils.isEmpty(department) && !TextUtils.isEmpty(room)
+                && !TextUtils.isEmpty(gender) && !TextUtils.isEmpty(workshop) && !TextUtils.isEmpty(room)
                 && !TextUtils.isEmpty(password)){
 
             mProgress.setMessage("Signin Up...");
@@ -173,9 +178,12 @@ public class RegisterOrganizerActivity extends AppCompatActivity {
                         current_user_db.child("name").setValue(name);
                         current_user_db.child("phone").setValue(phone);
                         current_user_db.child("birthdate").setValue(birth);
-                        current_user_db.child("department").setValue(department);
+                        current_user_db.child("workshop").setValue(workshop);
                         current_user_db.child("room").setValue(room);
                         current_user_db.child("gender").setValue(gender);
+                        current_user_db.child("type").setValue(type);
+                        current_user_db.child("country").setValue(country);
+                        current_user_db.child("email").setValue(email);
                         current_user_db.child("image").setValue("default");
 
                         mProgress.dismiss();

@@ -15,8 +15,11 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 public class BlogActivity extends AppCompatActivity {
@@ -28,10 +31,17 @@ public class BlogActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
+    private boolean mProcessLike = false;
+
+    private DatabaseReference mDatabaseLike;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blog);
+
+        mDatabaseLike = FirebaseDatabase.getInstance().getReference().child("Likes");
+        mDatabaseLike.keepSynced(true);
 
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -71,29 +81,122 @@ public class BlogActivity extends AppCompatActivity {
             @Override
             protected void populateViewHolder(BlogViewHolder viewHolder, Blog model, int position) {
 
+                final String post_key = getRef(position).getKey();
+
                 viewHolder.setDesc(model.getDesc());
                 viewHolder.setImage(getApplicationContext(), model.getImage());
+                viewHolder.setUsername(model.getUsername());
+
+                viewHolder.setLoveBtn(post_key);
+
+                viewHolder.mLoveBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        mProcessLike = true;
+
+                        mDatabaseLike.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                if (mProcessLike) {
+
+                                    if (dataSnapshot.child(post_key).hasChild(mAuth.getCurrentUser().getUid())) {
+
+                                        mDatabaseLike.child(post_key).child(mAuth.getCurrentUser().getUid()).removeValue();
+
+                                        mProcessLike = false;
+
+                                    } else {
+
+                                        mDatabaseLike.child(post_key).child(mAuth.getCurrentUser().getUid()).setValue("random");
+
+                                        mProcessLike = false;
+
+                                    }
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+                });
             }
         };
+
+
 
         mBlogList.setAdapter(firebaseRecyclerAdapter);
 
     }
 
+
     public static class BlogViewHolder extends RecyclerView.ViewHolder{
 
         View mView;
+
+        ImageView mLoveBtn;
+
+        DatabaseReference mDatabaseLike;
+
+        FirebaseAuth mAuth;
 
         public BlogViewHolder(View itemView) {
             super(itemView);
 
              mView = itemView;
+
+            mLoveBtn = (ImageView) mView.findViewById(R.id.love_btn);
+
+            mDatabaseLike = FirebaseDatabase.getInstance().getReference().child("Likes");
+
+            mAuth = FirebaseAuth.getInstance();
+
+            mDatabaseLike.keepSynced(true);
+        }
+
+        public void setLoveBtn(final String post_key){
+
+            mDatabaseLike.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    if(dataSnapshot.child(post_key).hasChild(mAuth.getCurrentUser().getUid())){
+
+                        mLoveBtn.setImageResource(R.mipmap.green_heart);
+
+                    }else{
+
+                        mLoveBtn.setImageResource(R.mipmap.greyheart3);
+
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
         }
 
         public void setDesc(String desc){
 
             TextView post_desc = (TextView) mView.findViewById(R.id.post_desc);
             post_desc.setText(desc);
+        }
+
+        public void setUsername(String username){
+
+            TextView post_username = (TextView) mView.findViewById(R.id.post_username);
+            post_username.setText(username);
+
         }
 
         public void setImage(Context ctx, String image){

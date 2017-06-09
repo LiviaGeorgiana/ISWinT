@@ -52,36 +52,12 @@
         android:layout_marginTop="15dp"
         />
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/organizer.datePicker"
-        android:inputType="date"
-        android:focusableInTouchMode="false"
-        android:layout_below="@id/organizer.phoneField"
-        android:layout_marginTop="15dp"
-        android:hint="Date of Birth"
-        />
-
-
 
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/organizer.genderSpinner"
-        android:layout_below="@id/organizer.datePicker"
-        android:ems="10"
-        android:spinnerMode="dropdown"
-        android:layout_marginTop="15dp"
-        android:padding="20dp"
-        >
-    </Spinner>
-
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/organizer.departmentSpinner"
-        android:layout_below="@id/organizer.genderSpinner"
+        android:layout_below="@+id/organizer.datePicker"
         android:ems="10"
         android:spinnerMode="dropdown"
         android:layout_marginTop="15dp"
@@ -93,7 +69,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/organizer.roomField"
-        android:layout_below="@id/organizer.departmentSpinner"
+        android:layout_below="@+id/organizer.departmentSpinner"
         android:hint="Room"
         android:ems="10"
         android:layout_marginTop="15dp"
@@ -121,6 +97,29 @@
         android:layout_below="@+id/organizer.passwordField"
         android:layout_marginEnd="121dp"
         android:layout_centerHorizontal="true"/>
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/organizer.departmentSpinner"
+        android:ems="10"
+        android:spinnerMode="dropdown"
+        android:layout_marginTop="15dp"
+        android:padding="20dp"
+        android:layout_below="@+id/organizer.genderSpinner"
+        android:layout_alignParentStart="true">
+    </Spinner>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/organizer.datePicker"
+        android:inputType="date"
+        android:focusableInTouchMode="false"
+        android:layout_marginTop="15dp"
+        android:hint="Date of Birth"
+        android:layout_below="@+id/organizer.phoneField"
+        android:layout_alignParentStart="true" />
 
 
 </RelativeLayout>
