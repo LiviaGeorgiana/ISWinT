@@ -15,6 +15,15 @@ public class Participant {
     private String room;
     private String gender;
     private String type;
+    private  String image;
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
 
     public String getType() {
         return type;
@@ -92,7 +101,7 @@ public class Participant {
     }
 
     public Participant(String type, String name, String email, String phone, String birthdate, String country,
-                       String workshop, String room, String gender) {
+                       String workshop, String room, String gender, String image) {
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -102,5 +111,6 @@ public class Participant {
         this.room = room;
         this.gender = gender;
         this.type = type;
+        this.image = image;
     }
 }

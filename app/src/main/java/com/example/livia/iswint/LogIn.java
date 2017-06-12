@@ -1,6 +1,7 @@
 package com.example.livia.iswint;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -41,6 +42,10 @@ public class LogIn extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
+    private DatabaseReference mDatabaseUsers;
+
+    private ProgressDialog mProgress;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +53,12 @@ public class LogIn extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_log_in);
 
+        mProgress = new ProgressDialog(this);
+
         mAuth = FirebaseAuth.getInstance();
+
+        mDatabaseUsers = FirebaseDatabase.getInstance().getReference().child("Users");
+        mDatabaseUsers.keepSynced(true);
 
         mEmailFiled = (EditText) findViewById(R.id.email_field);
         mPasswordField = (EditText) findViewById(R.id.password_field);
@@ -56,12 +66,16 @@ public class LogIn extends AppCompatActivity {
         mLoginBtn = (Button) findViewById(R.id.login_btn);
         mRegBtn = (Button) findViewById(R.id.regBtn);
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
+       mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
                 if(firebaseAuth.getCurrentUser() != null){
-                    startActivity(new Intent(LogIn.this, BlogActivity.class));
+                   // checkUserExist();
+
+                    Intent loginIntent = new Intent(LogIn.this, BlogActivity.class);
+                    loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(loginIntent);
                 }
             }
         };
@@ -100,29 +114,70 @@ public class LogIn extends AppCompatActivity {
     }
 
     private void startSingIn() {
-        String email = mEmailFiled.getText().toString();
-        String password = mPasswordField.getText().toString();
+        String email = mEmailFiled.getText().toString().trim();
+        String password = mPasswordField.getText().toString().trim();
 
-        if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password)){
+        if(!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)){
 
-            Toast.makeText(LogIn.this, "Fields are empty.", Toast.LENGTH_LONG).show();
+            mProgress.setMessage("Checking Login...");
+            mProgress.show();
 
-
-        } else {
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
 
-                    if(!task.isSuccessful()) {
-                        Toast.makeText(LogIn.this, "Sing In Problem", Toast.LENGTH_LONG).show();
-                    }
+                    if (task.isSuccessful()) {
 
+                        mProgress.dismiss();
+
+                        Intent loginIntent = new Intent(LogIn.this, BlogActivity.class);
+                        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(loginIntent);
+
+                        //checkUserExist();
+
+
+                    } else {
+
+                        mProgress.dismiss();
+
+                        Toast.makeText(LogIn.this, "Error Login", Toast.LENGTH_LONG).show();
+                    }
                 }
+
             });
         }
 
-
     }
+
+    /*private void checkUserExist(){
+
+        final String user_id = mAuth.getCurrentUser().getUid();
+
+        mDatabaseUsers.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.hasChild(user_id)){
+
+                    Intent loginIntent = new Intent(LogIn.this, BlogActivity.class);
+                    loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(loginIntent);
+
+                }else{
+                    FirebaseAuth.getInstance().signOut();
+                    Toast.makeText(LogIn.this, "You need to setup your account", Toast.LENGTH_LONG).show();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }*/
+
 }
 
 

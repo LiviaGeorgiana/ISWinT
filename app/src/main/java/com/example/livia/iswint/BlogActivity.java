@@ -1,17 +1,21 @@
 package com.example.livia.iswint;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,7 +24,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.kosalgeek.android.caching.FileCacher;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
+import org.w3c.dom.Text;
+
+import java.io.IOException;
 
 public class BlogActivity extends AppCompatActivity {
 
@@ -31,9 +42,14 @@ public class BlogActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
+    private DatabaseReference mDatabaseUsers;
+
     private boolean mProcessLike = false;
 
     private DatabaseReference mDatabaseLike;
+
+    private DatabaseReference mDatabaseLikeNumber;
+    private long nrOfLikes = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +58,12 @@ public class BlogActivity extends AppCompatActivity {
 
         mDatabaseLike = FirebaseDatabase.getInstance().getReference().child("Likes");
         mDatabaseLike.keepSynced(true);
+
+        mDatabaseUsers = FirebaseDatabase.getInstance().getReference().child("Users");
+        mDatabaseUsers.keepSynced(true);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Blog");
+        mDatabase.keepSynced(true);
 
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -57,7 +79,7 @@ public class BlogActivity extends AppCompatActivity {
             }
         };
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("Blog");
+
 
         mBlogList = (RecyclerView) findViewById(R.id.blog_list);
         mBlogList.setHasFixedSize(true);
@@ -79,13 +101,49 @@ public class BlogActivity extends AppCompatActivity {
                 mDatabase
         ) {
             @Override
-            protected void populateViewHolder(BlogViewHolder viewHolder, Blog model, int position) {
+            protected void populateViewHolder(final BlogViewHolder viewHolder, final Blog model, int position) {
 
                 final String post_key = getRef(position).getKey();
 
                 viewHolder.setDesc(model.getDesc());
                 viewHolder.setImage(getApplicationContext(), model.getImage());
                 viewHolder.setUsername(model.getUsername());
+
+                viewHolder.mView.findViewById(R.id.post_username).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        FileCacher<String> userUidCacher =
+                                            new FileCacher<String>(BlogActivity.this, "profileUid");
+                        try {
+                            userUidCacher.writeCache(model.getUid());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        startActivity(new Intent(BlogActivity.this, UserProfileActivity.class));
+
+                    }
+                });
+
+
+
+                mDatabaseLikeNumber  = FirebaseDatabase.getInstance().getReference().child("Likes")
+                        .child(post_key);
+                mDatabaseLikeNumber.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        nrOfLikes = dataSnapshot.getChildrenCount();
+                        viewHolder.setNrLikes(String.valueOf(nrOfLikes));
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
 
                 viewHolder.setLoveBtn(post_key);
 
@@ -141,9 +199,8 @@ public class BlogActivity extends AppCompatActivity {
         View mView;
 
         ImageView mLoveBtn;
-
+        TextView mNrLikes;
         DatabaseReference mDatabaseLike;
-
         FirebaseAuth mAuth;
 
         public BlogViewHolder(View itemView) {
@@ -152,12 +209,11 @@ public class BlogActivity extends AppCompatActivity {
              mView = itemView;
 
             mLoveBtn = (ImageView) mView.findViewById(R.id.love_btn);
-
             mDatabaseLike = FirebaseDatabase.getInstance().getReference().child("Likes");
-
             mAuth = FirebaseAuth.getInstance();
-
             mDatabaseLike.keepSynced(true);
+            mNrLikes = (TextView) mView.findViewById(R.id.txtNrLikes);
+
         }
 
         public void setLoveBtn(final String post_key){
@@ -199,11 +255,29 @@ public class BlogActivity extends AppCompatActivity {
 
         }
 
-        public void setImage(Context ctx, String image){
+        public void setImage(final Context ctx, final String image){
 
-            ImageView post_image = (ImageView) mView.findViewById(R.id.post_image);
-            Picasso.with(ctx).load(image).into(post_image);
+            final ImageView post_image = (ImageView) mView.findViewById(R.id.post_image);
+
+            Picasso.with(ctx).load(image).networkPolicy(NetworkPolicy.OFFLINE).into(post_image, new Callback() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onError() {
+
+                    Picasso.with(ctx).load(image).into(post_image);
+
+                }
+            });
         }
+
+        public void setNrLikes(String nrLikes){
+            mNrLikes.setText(nrLikes);
+        }
+
     }
 
 
@@ -239,4 +313,6 @@ public class BlogActivity extends AppCompatActivity {
 
         mAuth.signOut();
     }
+
 }
+

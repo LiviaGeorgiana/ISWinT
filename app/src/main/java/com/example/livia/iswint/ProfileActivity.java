@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.text.MessagePattern;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -29,6 +31,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -37,7 +42,7 @@ import java.util.ArrayList;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private ImageButton mSetupImageBtn;
+    private ImageView mSetupImageBtn;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -59,7 +64,13 @@ public class ProfileActivity extends AppCompatActivity {
 
     private DatabaseReference mRef;
 
+    private DatabaseReference mDatabaseUsers;
+
     private final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+    private StorageReference mStorageImage;
+
+    private String downloarUri;
 
 
     @Override
@@ -67,9 +78,13 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        mStorageImage = FirebaseStorage.getInstance().getReference().child("Profile_images");
+
+        mDatabaseUsers = FirebaseDatabase.getInstance().getReference().child("Users");
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mSetupImageBtn = (ImageButton) findViewById(R.id.setupImageBtn);
+        mSetupImageBtn = (ImageView) findViewById(R.id.setupImageBtn);
 
         mSetupImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,6 +95,7 @@ public class ProfileActivity extends AppCompatActivity {
                 galleryIntent.setType("image/=");
                 startActivityForResult(galleryIntent, GALLERY_REQUEST);
 
+               // startSetupAccount();
             }
         });
 
@@ -88,7 +104,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
-                if(firebaseAuth.getCurrentUser() == null){
+                if (firebaseAuth.getCurrentUser() == null) {
 
                     Intent loginIntent = new Intent(ProfileActivity.this, LogIn.class);
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -97,7 +113,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         };
 
-        mTypeText = (TextView) findViewById(R.id.typeText) ;
+        mTypeText = (TextView) findViewById(R.id.typeText);
         mNameText = (TextView) findViewById(R.id.nameText);
         mEmailText = (TextView) findViewById(R.id.emailText);
         mPhoneText = (TextView) findViewById(R.id.phoneText);
@@ -107,14 +123,17 @@ public class ProfileActivity extends AppCompatActivity {
         mRoomText = (TextView) findViewById(R.id.roomText);
         mWorkshopText = (TextView) findViewById(R.id.workshopText);
 
+
+
         mDatabase = mDatabase.child("Users");
 
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
+
             public void onDataChange(DataSnapshot dataSnapshot) {
                 dataSnapshot.child(firebaseUser.getUid()).getValue(Participant.class);
                 mTypeText.setText(dataSnapshot.child(firebaseUser.getUid())
-                                                    .getValue(Participant.class).getType());
+                        .getValue(Participant.class).getType());
                 mNameText.setText(dataSnapshot.child(firebaseUser.getUid())
                         .getValue(Participant.class).getName());
                 mEmailText.setText(dataSnapshot.child(firebaseUser.getUid())
@@ -131,6 +150,12 @@ public class ProfileActivity extends AppCompatActivity {
                         .getValue(Participant.class).getRoom());
                 mWorkshopText.setText(dataSnapshot.child(firebaseUser.getUid())
                         .getValue(Participant.class).getWorkshop());
+                if (!dataSnapshot.child(firebaseUser.getUid()).getValue(Participant.class).getImage().contains("default")){
+                    Picasso.with(ProfileActivity.this).load(
+                            dataSnapshot.child(firebaseUser.getUid()).getValue(Participant.class).getImage()
+                    ).fit().into(mSetupImageBtn);
+                }
+
 
             }
 
@@ -151,7 +176,6 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -163,12 +187,12 @@ public class ProfileActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
 
-        if(item.getItemId() == R.id.action_logout){
+        if (item.getItemId() == R.id.action_logout) {
 
             logout();
         }
 
-        if(item.getItemId() == R.id.action_gotoblog){
+        if (item.getItemId() == R.id.action_gotoblog) {
             startActivity(new Intent(ProfileActivity.this, BlogActivity.class));
         }
 
@@ -185,7 +209,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == GALLERY_REQUEST && resultCode == RESULT_OK){
+        if (requestCode == GALLERY_REQUEST && resultCode == RESULT_OK) {
 
             Uri imageUri = data.getData();
 
@@ -200,11 +224,13 @@ public class ProfileActivity extends AppCompatActivity {
 
             if (resultCode == RESULT_OK) {
 
-                 mImageUri = result.getUri();
+                mImageUri = result.getUri();
 
                 Picasso.with(ProfileActivity.this).load(mImageUri)
                         .fit().into(mSetupImageBtn);
                 //mSetupImageBtn.setImageURI(resultUri);
+
+                startSetupAccount();
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
@@ -212,5 +238,20 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    private void startSetupAccount() {
+
+        final String user_id = mAuth.getCurrentUser().getUid();
+
+        StorageReference filepath = mStorageImage.child(mImageUri.getLastPathSegment());
+        filepath.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                downloarUri = taskSnapshot.getDownloadUrl().toString();
+
+                mDatabaseUsers.child(user_id).child("image").setValue(downloarUri);
+            }
+        });
+    }
 
 }
+
