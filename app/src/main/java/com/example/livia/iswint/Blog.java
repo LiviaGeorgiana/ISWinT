@@ -10,16 +10,26 @@ public class Blog {
     private String image;
     private String uid;
     private String username;
+    private  String profileimage;
+
+    public String getProfileimage() {
+        return profileimage;
+    }
+
+    public void setProfileimage(String profileimage) {
+        this.profileimage = profileimage;
+    }
 
     public Blog(){
 
     }
 
-    public Blog(String desc, String image, String uid, String username) {
+    public Blog(String desc, String image, String uid, String username, String profileimage ) {
         this.desc = desc;
         this.image = image;
         this.uid = uid;
         this.username = username;
+        this.profileimage = profileimage;
     }
 
     public String getUsername() {

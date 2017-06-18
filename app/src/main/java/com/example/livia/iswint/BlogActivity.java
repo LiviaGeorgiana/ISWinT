@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -108,6 +109,7 @@ public class BlogActivity extends AppCompatActivity {
                 viewHolder.setDesc(model.getDesc());
                 viewHolder.setImage(getApplicationContext(), model.getImage());
                 viewHolder.setUsername(model.getUsername());
+                viewHolder.setProfileImage(getApplicationContext(), model.getProfileimage());
 
                 viewHolder.mView.findViewById(R.id.post_username).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -123,6 +125,21 @@ public class BlogActivity extends AppCompatActivity {
 
                         startActivity(new Intent(BlogActivity.this, UserProfileActivity.class));
 
+                    }
+                });
+
+                viewHolder.mView.findViewById(R.id.profile_pic).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        FileCacher<String> userUidCacher =
+                                new FileCacher<String>(BlogActivity.this, "profileUid");
+                        try {
+                            userUidCacher.writeCache(model.getUid());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        startActivity(new Intent(BlogActivity.this, UserProfileActivity.class));
                     }
                 });
 
@@ -248,6 +265,25 @@ public class BlogActivity extends AppCompatActivity {
             post_desc.setText(desc);
         }
 
+        public void  setProfileImage(final Context ctxx, final String profilimage) {
+
+            final ImageView profile_image = (ImageView) mView.findViewById(R.id.profile_pic);
+
+            Picasso.with(ctxx).load(profilimage).networkPolicy(NetworkPolicy.OFFLINE).fit().into(profile_image, new Callback() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onError() {
+
+                    Picasso.with(ctxx).load(profilimage).into(profile_image);
+
+                }
+            });
+        }
+
         public void setUsername(String username){
 
             TextView post_username = (TextView) mView.findViewById(R.id.post_username);
@@ -294,6 +330,10 @@ public class BlogActivity extends AppCompatActivity {
         if(item.getItemId() == R.id.action_add) {
 
             startActivity(new Intent(BlogActivity.this, PostActivity.class));
+        }
+
+        if(item.getItemId() == R.id.users){
+            startActivity(new Intent(BlogActivity.this, UsersActivity.class));
         }
 
         if(item.getItemId() == R.id.action_logout){

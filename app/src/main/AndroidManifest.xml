@@ -11,7 +11,7 @@
         android:name=".ISWinT"
         android:allowBackup="true"
         android:icon="@mipmap/iswint"
-        android:label="@string/app_name"
+        android:label=""
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".LogIn">
@@ -30,7 +30,8 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".RoleActivity" />
         <activity android:name=".RegisterOrganizerActivity" />
-        <activity android:name=".UserProfileActivity"></activity>
+        <activity android:name=".UserProfileActivity" />
+        <activity android:name=".UsersActivity"></activity>
     </application>
 
 </manifest>

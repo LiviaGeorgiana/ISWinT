@@ -55,7 +55,7 @@
             android:id="@+id/submit_btn"
             android:background="@drawable/btn_background"
             android:layout_marginTop="23dp"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorYellow"
             android:layout_below="@+id/descField"
             android:layout_alignEnd="@+id/descField" />
 

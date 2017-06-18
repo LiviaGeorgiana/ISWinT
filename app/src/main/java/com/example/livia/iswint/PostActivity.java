@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -49,6 +50,8 @@ public class PostActivity extends AppCompatActivity {
     private ProgressDialog mProgress;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +68,7 @@ public class PostActivity extends AppCompatActivity {
         mSubmitBtn = (Button) findViewById(R.id.submit_btn);
         mSelctImage = (ImageButton) findViewById(R.id.imageSelect);
         mProgress = new ProgressDialog(this);
+
 
         mSelctImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +120,7 @@ public class PostActivity extends AppCompatActivity {
                                 newPost.child("desc").setValue(desc_value);
                                 newPost.child("image").setValue(downloadUri.toString());
                                 newPost.child("uid").setValue(mCurrentUser.getUid());
+                                newPost.child("profileimage").setValue(dataSnapshot.child("image").getValue());
                                 newPost.child("username").setValue(dataSnapshot.child("name").getValue()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
